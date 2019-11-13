@@ -369,47 +369,7 @@ const getPercentage = str =&gt; str.match(reg)[1]
 getPercentage(str)
 // =&gt; &quot;2.9&quot;</code></pre>
 <aside class='notes'><p>To include <code>%</code>, move it inside the capture group</p>
-</aside></section>
-<section><h2 id="named-captures">Named Captures</h2>
-<pre><code class="language-javascript">const reg = /(?&lt;day&gt;\d{1,2})\/(?&lt;month&gt;\d{1,2})\/(?&lt;year&gt;\d{4})/
-
-const str = &quot;Apollo 11 landed on the moon on 20/7/1969&quot;
-const extractDate = str =&gt; str.match(reg)
-extractDate(str).groups
-// =&gt; {day: &quot;20&quot;, month: &quot;7&quot;, year: &quot;1969&quot;}</code></pre>
-<aside class='notes'><ul>
-<li>New to ES2018</li>
-<li>In pattern with <code>\k&lt;year&gt;</code></li>
-</ul>
 </aside></section></section>
-<section><section><h2 id="javascript-is-weird">JavaScript is Weird</h2>
-<pre><code class="language-javascript">&quot;bar baz&quot;.match(/ba\w/)
-// =&gt; [ &quot;bar&quot;, index: 0, input: &quot;bar baz&quot;,
-//      groups: undefined ]
-&quot;bar baz&quot;.match(/ba(\w)/)
-// =&gt; [ &quot;bar&quot;, &quot;r&quot;, index: 0 input &quot;bar baz&quot;,
-//      groups: undefined ]
-&quot;bar baz&quot;.match(/ba\w/g)   // =&gt; [ &quot;bar&quot;, &quot;baz&quot; ]
-&quot;bar baz&quot;.match(/ba(\w)/g) // =&gt; [ &quot;bar&quot;, &quot;baz&quot; ]
-&quot;bar baz&quot;.match(/foo/)     // =&gt; null
-&quot;bar baz&quot;.match(/foo/g)    // =&gt; null</code></pre>
-<aside class='notes'><ul>
-<li>I hereafter omit <code>groups: undefined</code> which are for named groups</li>
-</ul>
-</aside></section>
-<section><h2 id="exec-maintains-an-index"><code>.exec</code> maintains an index</h2>
-<pre><code class="language-javascript">const allMatches = (reg, str) =&gt; {
-  let match
-  const output = []
-  while (match = reg.exec(str)) {
-    output.push(match);
-  }
-  return output
-}
-allMatches(/ba(\w)/g, &quot;bar baz&quot;)
-// =&gt; [ [ &#39;bar&#39;, &#39;r&#39;, index: 0, input: &#39;bar baz&#39; ],
-//      [ &#39;baz&#39;, &#39;z&#39;, index: 4, input: &#39;bar baz&#39; ] ]</code></pre>
-</section></section>
 <section><section><h2 id="dot-all-the-things">Dot All the Things</h2>
 <pre><code class="language-javascript">const extract_comment = /\/\*(.+)\*\//s
 const contains_comment = `this.bit.is.code()
@@ -420,26 +380,32 @@ contains_comment.match(extract_comment)[1].strip
 // =&gt; &quot;this is a comment\nthis too&quot;
 
 const es3_extract_comment = /\/\*([\w\W]+)\*\//</code></pre>
-<p>This is what <a href="https://github.com/mooz/js2-mode/blob/master/js2-mode.el#L6160">your</a> <a href="https://github.com/isagalaev/highlight.js/blob/master/src/highlight.js#L756">syntax</a> <a href="https://github.com/pangloss/vim-javascript/blob/master/syntax/javascript.vim#L202">highlighter</a> <a href="https://github.com/Benvie/JavaScriptNext.tmLanguage/blob/master/JavaScriptNext.tmLanguage#L70">is</a> <a href="https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson#L1890">doing</a>!</p>
+</section>
+<section><h2 id="syntax-highlighting">Syntax Highlighting</h2>
+<ul>
+<li><a href="https://github.com/pangloss/vim-javascript/blob/master/syntax/javascript.vim#L202">Vim</a></li>
+<li><a href="https://github.com/mooz/js2-mode/blob/master/js2-mode.el#L6160">Emacs</a></li>
+<li><a href="https://github.com/isagalaev/highlight.js/blob/master/src/highlight.js#L756">Highlight.js</a> (including this talk)</li>
+<li><a href="https://github.com/Benvie/JavaScriptNext.tmLanguage/blob/master/JavaScriptNext.tmLanguage#L70">Sublime</a></li>
+<li><a href="https://github.com/atom/language-javascript/blob/master/grammars/javascript.cson#L1890">Atom</a></li>
+</ul>
 </section>
 <section><h2 id="other-times--is-too-much">Other times <code>.</code> is too much</h2>
 <pre><code class="language-javascript">const foo = &#39;foo=&quot;foo&quot;&#39;
 foo.match(/&quot;(.+)&quot;/g)
-// =&gt; [ [ &#39;&quot;foo&quot;&#39;, &quot;foo&quot;, index: 6, input: &#39;foo = &quot;foo&quot;&#39; ] ]
+// =&gt; [ &#39;foo&#39; ]
 
 const foobar = &#39;foo=&quot;foo&quot;,bar=&quot;bar&quot;&#39;
-allMatches(/&quot;(.+)&quot;/g, foobar)
-// =&gt; [ [ &#39;&quot;foo&quot;, bar=&quot;bar&quot;&#39;,&#39;foo&quot;, bar=&quot;bar&#39;, index: 4,
-//      input: &#39;foo=&quot;foo&quot;, bar=&quot;bar&quot;&#39; ] ]
+foo.match(/&quot;(.+)&quot;/g, foobar)
+// =&gt; [ &#39;foo&quot;, bar=&quot;bar&#39; ]
 
-allMatches(/&quot;([^&quot;]+)&quot;/g, foobar)
-// =&gt; [ [ &#39;&quot;foo&quot;&#39;, &quot;foo&quot;, index: 4,
-//        input: &#39;foo=&quot;foo&quot;,bar=&quot;bar&quot;&#39; ],
-//      [ &#39;&quot;bar&quot;&#39;, &quot;bar&quot;, index: 14,
-//        input: &#39;foo=&quot;foo&quot;,bar=&quot;bar&quot;&#39; ] ]</code></pre>
+foo.match(/&quot;([^&quot;]+)&quot;/g, foobar)
+// =&gt; [ &#39;foo&#39;,
+//      &#39;bar&#39; ]</code></pre>
 <aside class='notes'><ul>
 <li>Think about the interpretter</li>
 <li>You can make the regex engine lazy with <code>?</code></li>
+<li>Quirk in js engine means this is a lie</li>
 </ul>
 </aside></section>
 <section><p><img src="./images/regex_xword_4.svg" alt="Crossword 4"></p>
@@ -447,12 +413,6 @@ allMatches(/&quot;([^&quot;]+)&quot;/g, foobar)
 <section><p><img src="./images/regex_xword_4_solution.svg" alt="Crossword 4 Solution"></p>
 </section></section>
 <section><section><h2 id="matching-email-addresses">Matching Email Addresses</h2>
-<ul>
-<li><a href="http://rubular.com">Rubular</a> (Ruby)</li>
-<li><a href="http://www.gethifi.com/tools/regex">hifi RegExp Tool</a> (JavaScript)</li>
-</ul>
-</section>
-<section><h2 id="matching-email-addresses">Matching Email Addresses</h2>
 <pre><code class="language-regex">/[\w.%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i</code></pre>
 <table>
 <thead>
@@ -509,7 +469,7 @@ containsOnlyEmail(injection) // false</code></pre>
 </aside></section></section>
 <section><section><h2 id="s-various-meanings"><code>^</code>&#39;s various meanings</h2>
 <pre><code class="language-javascript">const isFirstCharacterVowel = str =&gt; /^[aeiou]/i.test(str)
-const containsNonVowel = str =&gt; /[^aeiou]/i</code></pre>
+const containsNonVowel = str =&gt; /[^aeiou]/i.test(str)</code></pre>
 <aside class='notes'><p><code>?</code> is also tricky</p>
 </aside></section>
 <section><h2 id="-------------">\ ^ $ . | ? * + ( ) [ ] { }</h2>
@@ -556,7 +516,8 @@ typo.test(&quot;2&quot;)      // true</code></pre>
 <section><h2 id="chrome-via-deepsearch">Chrome via DeepSearch</h2>
 <p><img src="images/deep_search.png" alt="Deep Search"></p>
 </section>
-<section><pre><code class="language-plaintext">GREP(1)                                       User Commands
+<section><h2 id="command-line">Command Line</h2>
+<pre><code class="language-plaintext">GREP(1)                                       User Commands
 
 NAME
       grep, egrep, fgrep, rgrep -
@@ -585,6 +546,12 @@ DESCRIPTION
 </li>
 <li>Basics are ~universal across languages</li>
 <li>Some advanced features vary (e.g., lookarounds, named references)</li>
+</ul>
+</section>
+<section><h2 id="tools-for-writing-regex">Tools for Writing Regex</h2>
+<ul>
+<li><a href="http://rubular.com">Rubular</a> (Ruby)</li>
+<li><a href="http://www.gethifi.com/tools/regex">hifi RegExp Tool</a> (JavaScript)</li>
 </ul>
 </section>
 <section><h2 id="regex-crosswords">Regex Crosswords</h2>
