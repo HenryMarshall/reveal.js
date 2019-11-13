@@ -11,8 +11,6 @@ charset: "utf-8"
 # Regex 101
 
 <p style="text-align: center;">Henry Marshall</p>
-<p style="text-align: center;">SEM.js</p>
-<p style="text-align: center;">2019-03-11</p>
 
 ==========
 
@@ -21,6 +19,7 @@ charset: "utf-8"
 - Powerful and Concise
 - Truly cross-platform
 - Will be around forever
+- Easy to learn
 
 ----------
 
@@ -62,7 +61,7 @@ windows_str.split("\n")
 
 | Pattern   | Description             | Matches                      |
 | --------- | ----------------------- | ---------------------------- |
-| `a?`      | One or Zero 'a'         | '' 'a'                       |
+| `a?`      | Zero or One 'a'         | '' 'a'                       |
 | `a*`      | Zero or More 'a'        | '' 'a' 'aa' 'aaa' 'aaaa'...  |
 | `a+`      | One or More 'a'         | 'a' 'aa' 'aaa' 'aaaa'...     |
 | `a{3}`    | Exactly three 'a'       | 'aaa'                        |
@@ -94,9 +93,17 @@ windows_str.split(reg)
 
 ![Crossword 1 Solution](./images/regex_xword_1_solution.svg)
 
-----------
+==========
 
 ## The dot character
+
+```javascript
+const reg = /ba./
+
+reg.test("foo") // false
+reg.test("bar") // true
+reg.test("baz") // true
+```
 
 ----------
 
@@ -108,7 +115,7 @@ windows_str.split(reg)
 
 ==========
 
-## Matching Either Or
+## Matching This or That
 
 ```javascript
 const reg = /???/
@@ -127,11 +134,12 @@ const reg = /grand.a/
 
 const str = "My grandma has a cat. My grandpa has a dog."
 str.replace(reg, "family")
+// "My family has a cat. My family has a dog."
 
 reg.test(str)
 // true
 
-reg.test("My grandxa has a dog")
+reg.test("My grandxa has a hamster")
 // true
 ```
 
@@ -144,12 +152,12 @@ const reg = /grand[mp]a/g
 
 const str = "My grandma has a cat. My grandpa has a dog."
 str.replace(reg, "family")
-// => "My family has a cat. My family has a dog."
+// "My family has a cat. My family has a dog."
 
 reg.test(str)
 // true
 
-reg.test("My grandxa has a dog")
+reg.test("My grandxa has a hamster")
 // false
 ```
 
@@ -172,24 +180,30 @@ Note: I can (and did) use `\d` inside another character class!
 
 ## Negation
 
-```js
+```javascript
 const reg = /???/
 
 const containsNonVowel = str => reg.test(str)
 containsNonVowel("foo")
-// => true
+// true
+
+containsNonVowel("AAAAAAAA")
+// false
 ```
 
 ----------
 
 ## Negation
 
-```js
-const reg = /[^aeiou]/
+```javascript
+const reg = /[^aeiou]/i
 
 const containsNonVowel = str => reg.test(str)
 containsNonVowel("foo")
-// => true
+// true
+
+containsNonVowel("AAAAAAAA")
+// false
 ```
 
 ----------
@@ -226,7 +240,7 @@ containsNonVowel("foo")
 
 ## Groups
 
-```js
+```javascript
 const reg = /???/
 
 const isTheme = str => reg.test(str)
@@ -239,7 +253,7 @@ isTheme("nanananananana Batman!")
 
 ## Character Classes "Solution"
 
-```js
+```javascript
 const reg = /[na]+/
 
 const isTheme = str => reg.test(str)
@@ -255,7 +269,7 @@ isTheme("aaaaannnnnnnnn Batman!")
 
 ## Groups
 
-```js
+```javascript
 const reg = /(na)+/
 
 const isTheme = str => reg.test(str)
@@ -297,8 +311,8 @@ str.replace(reg, "family")
 
 ```javascript
 const regCharacterClass = /grand[mp]a/g
-const regAlternationGroup = /grand(m|p)a/g
-const regAlternationWord - /(grandma|grandpa)/g
+const regAlternationLetter = /grand(m|p)a/g
+const regAlternationWord = /(grandma|grandpa)/g
 ```
 
 ----------
@@ -354,7 +368,7 @@ Note: Use `$1` instead of `\1`
 
 ## Capture Groups
 
-```js
+```javascript
 const reg = /???/
 
 const str = "Stripe costs 2.9% + $0.30"
@@ -369,7 +383,7 @@ Note: To include `%`, move it inside the capture group
 
 ## Capture Groups
 
-```js
+```javascript
 const reg = /(100|\d{1,2}(\.\d+)?)%/
 
 const str = "Stripe costs 2.9% + $0.30"
@@ -385,7 +399,7 @@ Note: To include `%`, move it inside the capture group
 
 ## Named Captures
 
-```js
+```javascript
 const reg = /(?<day>\d{1,2})\/(?<month>\d{1,2})\/(?<year>\d{4})/
 
 const str = "Apollo 11 landed on the moon on 20/7/1969"
@@ -394,21 +408,20 @@ extractDate(str).groups
 // => {day: "20", month: "7", year: "1969"}
 ```
 
-Note: 
+Note:
 - New to ES2018
 - In pattern with `\k<year>`
-- Backreference with `
 
 ==========
 
 ## JavaScript is Weird
 
 ```javascript
-"bar baz".match(/ba\w/)    
+"bar baz".match(/ba\w/)
 // => [ "bar", index: 0, input: "bar baz",
 //      groups: undefined ]
-"bar baz".match(/ba(\w)/)  
-// => [ "bar", "r", index: 0 input "bar baz", 
+"bar baz".match(/ba(\w)/)
+// => [ "bar", "r", index: 0 input "bar baz",
 //      groups: undefined ]
 "bar baz".match(/ba\w/g)   // => [ "bar", "baz" ]
 "bar baz".match(/ba(\w)/g) // => [ "bar", "baz" ]
@@ -416,7 +429,7 @@ Note:
 "bar baz".match(/foo/g)    // => null
 ```
 
-Note: 
+Note:
 - I hereafter omit `groups: undefined` which are for named groups
 
 ----------
@@ -432,7 +445,7 @@ const allMatches = (reg, str) => {
   }
   return output
 }
-allMatches(/ba(\w)/g, "bar baz") 
+allMatches(/ba(\w)/g, "bar baz")
 // => [ [ 'bar', 'r', index: 0, input: 'bar baz' ],
 //      [ 'baz', 'z', index: 4, input: 'bar baz' ] ]
 ```
@@ -470,13 +483,13 @@ allMatches(/"(.+)"/g, foobar)
 //      input: 'foo="foo", bar="bar"' ] ]
 
 allMatches(/"([^"]+)"/g, foobar)
-// => [ [ '"foo"', "foo", index: 4, 
+// => [ [ '"foo"', "foo", index: 4,
 //        input: 'foo="foo",bar="bar"' ],
-//      [ '"bar"', "bar", index: 14, 
+//      [ '"bar"', "bar", index: 14,
 //        input: 'foo="foo",bar="bar"' ] ]
 ```
 
-Note: 
+Note:
 - Think about the interpretter
 - You can make the regex engine lazy with `?`
 
@@ -512,7 +525,7 @@ Note:
 | `[A-Z]{2,}`      | Two or more letters                             |
 | `i`              | Case Insensitive                                |
 
-Note: 
+Note:
 - Escaping metacharacters was unnecessary inside char class.
 - Not uncommon for regex to reject my personal email.
 
@@ -521,10 +534,10 @@ Note:
 ## Matching the Whole String
 
 ```javascript
-const codeInjection = 
+const codeInjection =
   "<script>alert('uh oh')</script>\nfoo@bar.com"
 
-const containsEmail = str => 
+const containsEmail = str =>
   /[\w.%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(str)
 containsEmail(injection) // true
 
@@ -533,7 +546,7 @@ const containsOnlyEmail = str =>
 containsOnlyEmail(injection) // false
 ```
 
-Note: 
+Note:
 - Ruby treats as multi-line by default -- use `\A` & `\z`.
 - If you *want* that behavior, use multiline flag `m`.
 
@@ -622,7 +635,7 @@ Note: Your code, your config files, your editor
 GREP(1)                                       User Commands
 
 NAME
-      grep, egrep, fgrep, rgrep - 
+      grep, egrep, fgrep, rgrep -
         print lines matching a pattern
 
 SYNOPSIS
@@ -631,7 +644,7 @@ SYNOPSIS
       grep [OPTIONS] -f FILE ... [FILE...]
 
 DESCRIPTION
-      grep  searches  for PATTERN in each FILE.  A FILE of 
+      grep  searches  for PATTERN in each FILE.  A FILE of
       “-” stands for standard input.  If no FILE is given,
 ```
 
